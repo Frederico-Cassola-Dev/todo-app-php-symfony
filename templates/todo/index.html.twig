@@ -1,0 +1,67 @@
+{# templates/todo/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Todo List{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Mes tâches ({{ tasks|length }})</h1>
+
+    <a href="{{ path('app_todo_new') }}" class="btn btn-primary mb-3">
+        ➕ Ajouter tâche exemple
+    </a>
+
+    {% if tasks|length > 0 %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Titre</th>
+                        <th>Description</th>
+                        <th>Échéance</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in tasks %}
+                    <tr class="{% if task.isDone %}table-success{% else %}table-warning{% endif %}">
+                        <td><strong>{{ task.title }}</strong></td>
+                        <td>{{ task.description ?: 'Aucune' }}</td>
+                        <td>
+                            {% if task.dueDate %}
+                                {{ task.dueDate|format_datetime('short', 'short') }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge {% if task.isDone %}bg-success{% else %}bg-warning{% endif %}">
+                                {{ task.isDone ? '✅ Fait' : '⏳ À faire' }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ path('app_todo_toggle', {'id': task.id}) }}"
+                               class="btn btn-sm btn-outline-info me-1">
+                                🔄 Toggle
+                            </a>
+                            <a href="{{ path('app_todo_delete', {'id': task.id}) }}"
+                               class="btn btn-sm btn-outline-danger"
+                               onclick="return confirm('Supprimer {{ task.title }} ?')">
+                                🗑️ Suppr
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            <h4>Aucune tâche 😴</h4>
+            <p><a href="{{ path('app_todo_new') }}" class="btn btn-primary">Crée la première !</a></p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
