@@ -24,9 +24,33 @@
             <table class="table table-striped">
                 <thead class="table-dark">
                     <tr>
-                        <th>Titre</th>
+                        <th>
+                        {% set newSort = 'title' %}
+                        {% set newDir = activeSort and direction == 'ASC' ? 'DESC' : 'ASC' %}
+                        <a href="{{ path(
+                        app.request.attributes.get('_route'),
+                        app.request.query.all|merge({
+                            sort: newSort, direction: newDir,
+                            }),
+                        ) }}">
+                        Titre
+                        </a>
+
+                        </th>
                         <th>Description</th>
-                        <th>Échéance</th>
+                        <th>
+                        {% set newSort = 'dueDate' %}
+                        {% set newDir = activeSort and direction == 'ASC' ? 'DESC' : 'ASC' %}
+                        <a href="{{ path(
+                        app.request.attributes.get('_route'),
+                        app.request.query.all|merge({
+                            sort: newSort, direction: newDir,
+                            }),
+                        ) }}">
+                        Échéance
+                        </a>
+
+                        </th>
                         <th>Statut</th>
                         <th class="d-flex justify-content-center">Actions</th>
                         <th>Priority</th>

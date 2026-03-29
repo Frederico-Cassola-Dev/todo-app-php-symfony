@@ -6,8 +6,6 @@ use App\Enum\TaskPriority;
 use App\Repository\TaskRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\PrePersist;
-use Doctrine\ORM\Mapping\PreUpdate;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
 class Task
@@ -109,8 +107,6 @@ class Task
 
         return $this;
     }
-
-
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {

@@ -27,6 +27,7 @@ class TodoController extends AbstractController
             $em->flush();
 
             $this->addFlash('success', 'Tâche créée !');
+
             return $this->redirectToRoute('app_todo');
         }
 
@@ -40,18 +41,19 @@ class TodoController extends AbstractController
     }
 
     #[Route('/todo', name: 'app_todo')]
-    public function index(TaskRepository $repository): Response
+    public function index(TaskRepository $repository, Request $request): Response
     {
-        $tasks = $repository->findAll();
-        // foreach ($tasks as $task) {
-        //     if ($task->getDueDate()) {
-        //         dump($task->getDueDate()->getTimestamp());
-        //     }
-        // }
-        // dd($tasks);
+        $sort = $request->query->get('sort', 'updatedAt');
+        $dir = $request->query->get('direction', 'DESC');
+
+        $tasks = $repository->findAllSorted($sort, $dir);
+
+        var_dump($sort, $dir);
 
         return $this->render('todo/index.html.twig', [
             'tasks' => $tasks,
+            'activeSort' => $sort,
+            'direction' => $dir,
         ]);
     }
 
@@ -62,6 +64,7 @@ class TodoController extends AbstractController
         $task->setTitle('Nouvelle tâche exemple');
         $task->setDescription('Description par défaut');
         $task->setCreatedAt(new \DateTimeImmutable());
+        $task->setUpdatedAt(new \DateTimeImmutable());
         $task->setIsDone(false);
         $em->persist($task);
         $em->flush();
@@ -73,6 +76,7 @@ class TodoController extends AbstractController
     public function toggle(Task $task, EntityManagerInterface $em): Response
     {
         $task->setIsDone(!$task->isDone());
+        $task->setUpdatedAt(new \DateTimeImmutable());
         $em->flush();
 
         return $this->redirectToRoute('app_todo');
@@ -94,6 +98,8 @@ class TodoController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $task->setUpdatedAt(new \DateTimeImmutable());
+
             $em->flush();
             $this->addFlash('success', 'Taché modifiée !');
 
