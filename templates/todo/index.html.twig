@@ -35,7 +35,6 @@
                         ) }}">
                         Titre
                         </a>
-
                         </th>
                         <th>Description</th>
                         <th>
@@ -49,11 +48,22 @@
                         ) }}">
                         Échéance
                         </a>
-
                         </th>
                         <th>Statut</th>
                         <th class="d-flex justify-content-center">Actions</th>
-                        <th>Priority</th>
+                        <th>
+                        {% set newSort = 'priority' %}
+                        {% set newDir = activeSort and direction == 'ASC' ? 'DESC' : 'ASC' %}
+                        <a href="{{ path(
+                        app.request.attributes.get('_route'),
+                        app.request.query.all|merge({
+                            sort: newSort, direction: newDir,
+                            }),
+                        ) }}">
+                        Priority
+                        </a>
+
+                        </th>
                     </tr>
                 </thead>
                 <tbody>

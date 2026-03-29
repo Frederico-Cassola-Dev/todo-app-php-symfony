@@ -48,8 +48,6 @@ class TodoController extends AbstractController
 
         $tasks = $repository->findAllSorted($sort, $dir);
 
-        var_dump($sort, $dir);
-
         return $this->render('todo/index.html.twig', [
             'tasks' => $tasks,
             'activeSort' => $sort,

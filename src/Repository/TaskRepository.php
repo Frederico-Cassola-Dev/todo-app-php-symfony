@@ -18,7 +18,7 @@ class TaskRepository extends ServiceEntityRepository
 
     public function findAllSorted(string $sortField, string $direction): array
     {
-        $allowedSorts = ['dueDate', 'updatedAt', 'title'];
+        $allowedSorts = ['dueDate', 'updatedAt', 'title', 'priority'];
         if (!in_array($sortField, $allowedSorts, true)) {
             $sortField = 'updatedAt';
         }
@@ -27,14 +27,34 @@ class TaskRepository extends ServiceEntityRepository
             $direction = 'DESC';
         }
 
-        $qb = $this->createQueryBuilder('t')
-            ->orderBy('t.' . $sortField, $direction);
+        $qb = $this->createQueryBuilder('t');
+
+        if ($sortField === 'priority') {
+            $qb->addSelect(
+                '(
+                CASE
+                    WHEN t.priority = :high THEN 1
+                    WHEN t.priority = :medium THEN 2
+                    WHEN t.priority = :low THEN 3
+                ELSE 99
+                END
+                ) AS HIDDEN priorityRank'
+            )
+            ->setParameter('high', 'high')
+            ->setParameter('medium', 'medium')
+            ->setParameter('low', 'low')
+            ->orderBy('priorityRank', $direction);
+        } else {
+            $qb->orderBy('t.' . $sortField, $direction);
+        }
 
         if ('updatedAt' !== $sortField) {
             $qb->addOrderBy('t.updatedAt', 'DESC');
         }
-        var_dump($qb->getDQL());
-
+        var_dump(
+            $qb->getDQL()
+        );
+        // var_dump($sortField, $direction);
         return $qb->getQuery()
         ->getResult();
     }
